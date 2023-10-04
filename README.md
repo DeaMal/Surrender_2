@@ -9,7 +9,7 @@ A simple turn-based game. All game elements are randomly generated. The size of 
 
     mkdir target
 
-    javac -d target/ -sourcepath Game/src/main/java/ -cp Game/src/main/java/edu/school21/game/app/Program.java ChaseLogic/src/main/java/edu/school21/chase/logic/*.java
+    javac -d target/ -sourcepath Game/src/main/java/ Game/src/main/java/edu/school21/game/app/Program.java ChaseLogic/src/main/java/edu/school21/chase/logic/*.java
 
     cp -r Game/src/main/resources/*.* target
 
