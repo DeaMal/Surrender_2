@@ -1,4 +1,4 @@
-# Surrender, You're Surrounded
+# Surrender, You're Surrounded Again
 A game with 2D graphics and random generation of the field and enemies, the task is to get to the exit while running away from enemies.
 
 ## Overview
@@ -9,21 +9,15 @@ A simple turn-based game. All game elements are randomly generated. The size of 
 
     mkdir target
 
-    javac -d target/ -sourcepath Game/src/main/java/ -cp Game/lib/\*  Game/src/main/java/edu/school21/game/app/Program.java ChaseLogic/src/main/java/edu/school21/chase/logic/*.java
+    javac -d target/ -sourcepath Game/src/main/java/ -cp Game/src/main/java/edu/school21/game/app/Program.java ChaseLogic/src/main/java/edu/school21/chase/logic/*.java
 
     cp -r Game/src/main/resources/*.* target
-
-    cd target
-    jar xf ../Game/lib/jcommander-1.78.jar
-    jar xf ../Game/lib/JCDP-4.0.2.jar
-    rm -rf META-INF
-    cd ..
 
     jar cmf Game/manifest.txt game.jar -C target .
 
     rm -rf target
 
-    java -jar game.jar --enemiesCount=10 --wallsCount=10 --size=30 --profile=production
+    java -jar game.jar
 
 ## Usage
 

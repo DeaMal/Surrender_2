@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class ActionGame extends JComponent implements KeyListener, ActionListener {
@@ -20,9 +21,14 @@ public class ActionGame extends JComponent implements KeyListener, ActionListene
     private final Player player;
     private final Enemy[] enemies;
     private final int size;
-    private JFrame game;
-//    boolean mode;
+    private final JFrame game;
+    private final BufferedImage field2D;
+    private final BufferedImage enemy2D;
+    private final BufferedImage player2D;
+    private final BufferedImage wall2D;
+    private final BufferedImage goal2D;
     Timer t = new Timer(5, this);
+
     public ActionGame(int fieldSize, int wallsCount, int enemyCount, boolean mode, JFrame g) {
         game = g;
         parameters = new Parameters(mode ? "production" : "dev");
@@ -33,42 +39,65 @@ public class ActionGame extends JComponent implements KeyListener, ActionListene
         for (int i = 0; i < enemyCount; i++) {
             enemies[i] = new Enemy(field.getEnemiesCoord()[i][0], field.getEnemiesCoord()[i][1], field, player);
         }
+        player2D = drawElement(getColor(parameters.getPlayerColor()), parameters.getPlayer(), "/1.png");
+        enemy2D = drawElement(getColor(parameters.getEnemyColor()), parameters.getEnemy(), "/2.png");
+        wall2D = drawElement(getColor(parameters.getWallColor()), parameters.getWall(), "/3.png");
+        goal2D = drawElement(getColor(parameters.getGoalColor()), parameters.getGoal(), "/4.png");
+        field2D = drawField();
+    }
+
+    public BufferedImage drawField() {
+        BufferedImage targetImage = new BufferedImage(size * 20, size * 20, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2D = targetImage.createGraphics();
+        g2D.setColor(getColor(parameters.getEmptyColor()));
+        g2D.fillRect(0, 0, size * 20, size * 20);
+        for (int i = 1; i < size + 1; i++) {
+            for (int j = 1; j < size + 1; j++) {
+                char ch = field.getCell(j, i);
+                if (ch == '#') {
+                    g2D.drawImage(wall2D, null, (j - 1) * 20, (i - 1) * 20);
+                } else if (ch == 'O') {
+                    g2D.drawImage(goal2D, null, (j - 1) * 20, (i - 1) * 20);
+                }
+            }
+        }
+        g2D.dispose();
+        return targetImage;
+    }
+
+    public BufferedImage drawElement(Color c, char ch, String file) {
+        BufferedImage targetImage = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2D = targetImage.createGraphics();
+        if (parameters.isDebug()) {
+            g2D.setColor(c);
+            g2D.fillRect(0, 0, 20, 20);
+            g2D.setColor(Color.WHITE);
+            String fontName = "Microsoft YaHei";
+            Font f = new Font(fontName, Font.PLAIN, 20);
+            g2D.setFont(f);
+            g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            FontMetrics fm = g2D.getFontMetrics(f);
+            int textWidth = fm.stringWidth(String.valueOf(ch));
+            int widthX = (20 - textWidth) / 2;
+            g2D.drawString(String.valueOf(ch), widthX,17);
+        } else {
+            try {
+                g2D.drawImage(ImageIO.read(getClass().getResource(file)), 0, 0, null);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return targetImage;
     }
 
     public void paint(Graphics g) {
         Graphics2D graphics2D = (Graphics2D)g;
-        graphics2D.setColor(getColor(parameters.getEmptyColor()));
-        graphics2D.fillRect(0, 0, size * 20, size * 20);
-        for (int i = 1; i < size; i++) {
-            for (int j = 1; j < size; j++) {
-                char ch = field.getCell(j, i);
-                if (ch == '#') {
-                    if (parameters.isDebug()) {
-                        blockDraw(graphics2D, j, i, getColor(parameters.getWallColor()), parameters.getWall());
-                    } else {
-                        pixelDraw(graphics2D, j, i, "/3.png");
-                    }
-                } else if (ch == 'O') {
-                    if (parameters.isDebug()) {
-                        blockDraw(graphics2D, j, i, getColor(parameters.getGoalColor()), parameters.getGoal());
-                    } else {
-                        pixelDraw(graphics2D, j, i, "/4.png");
-                    }
-                }
-            }
-        }
+        graphics2D.drawImage(field2D, null, 0, 0);
+
         for (Enemy e : enemies) {
-            if (parameters.isDebug()) {
-                blockDraw(graphics2D, e.getMyPointCoordX(), e.getMyPointCoordY(), getColor(parameters.getEnemyColor()), parameters.getEnemy());
-            } else {
-                pixelDraw(graphics2D, e.getMyPointCoordX(), e.getMyPointCoordY(), "/2.png");
-            }
+            graphics2D.drawImage(enemy2D, null, (e.getMyPointCoordX() - 1) * 20, (e.getMyPointCoordY() - 1) * 20);
         }
-        if (parameters.isDebug()) {
-            blockDraw(graphics2D, player.getCordX(), player.getCordY(), getColor(parameters.getPlayerColor()), parameters.getPlayer());
-        } else {
-            pixelDraw(graphics2D, player.getCordX(), player.getCordY(), "/1.png");
-        }
+        graphics2D.drawImage(player2D, null, (player.getCordX() - 1) * 20, (player.getCordY() - 1) * 20);
         graphics2D.dispose();
         t.start();
     }
@@ -118,38 +147,6 @@ public class ActionGame extends JComponent implements KeyListener, ActionListene
         return color;
     }
 
-    public void pixelDraw(Graphics2D g2D, int x, int y, String file) {
-        try {
-            g2D.drawImage(ImageIO.read(getClass().getResource(file)), (x - 1) * 20, (y - 1) * 20, this);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void blockDraw(Graphics2D g2D, int x, int y, Color c, char ch) {
-        g2D.setColor(c);
-        g2D.fillRect((x - 1) * 20, (y - 1) * 20, 20, 20);
-        g2D.setColor(Color.WHITE);
-        String fontName = "Microsoft YaHei";
-        Font f = new Font(fontName, Font.PLAIN, 20);
-        g2D.setFont(f);
-        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        FontMetrics fm = g2D.getFontMetrics(f);
-        int textWidth = fm.stringWidth(String.valueOf(ch));
-        int widthX = (20 - textWidth) / 2;
-        g2D.drawString(String.valueOf(ch), widthX + (x - 1) * 20, (y - 1) * 20 + 17);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        repaint();
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-
-    }
-
     @Override
     public void keyPressed(KeyEvent e) {
         int movement = -1;
@@ -179,6 +176,15 @@ public class ActionGame extends JComponent implements KeyListener, ActionListene
         }
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        repaint();
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
     @Override
     public void keyReleased(KeyEvent e) {
 

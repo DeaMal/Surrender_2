@@ -9,13 +9,13 @@ public class GameField {
     private final int fieldSize;
     private final int obstacles;
     private final int enemies;
-    private int[] playerCoord = new int[2];
-    private int[] playerCoordBackup = new int[2];
-    private int[] playerCoordForCheck = new int[2];
+    private final int[] playerCoord = new int[2];
+    private final int[] playerCoordBackup = new int[2];
+    private final int[] playerCoordForCheck = new int[2];
 
-    private int[] targetCoord = new int[2];
-    private Integer[][] enemiesCoord;
-    private Map<Integer, ArrayList<Integer>> obstaclesCoord = new HashMap<>();
+    private final int[] targetCoord = new int[2];
+    private final Integer[][] enemiesCoord;
+    private final Map<Integer, ArrayList<Integer>> obstaclesCoord = new HashMap<>();
 
     public GameField(int fieldSizeIn, int obstaclesIn, int enemiesIn) {
         fieldSize = fieldSizeIn + 2;
@@ -39,9 +39,7 @@ public class GameField {
         } while (!wayCheck() && (genStopLoss != 0));
         if(genStopLoss != 0) {
             for(int i = 0; i < fieldSize; ++i) {
-                for(int j = 0; j < fieldSize; ++j) {
-                    field[i][j] = fieldBackup[i][j];
-                }
+                System.arraycopy(fieldBackup[i], 0, field[i], 0, fieldSize);
             }
             playerCoord[0] = playerCoordBackup[0];
             playerCoord[1] = playerCoordBackup[1];
@@ -56,9 +54,7 @@ public class GameField {
         boolean gotIt = false;
         boolean manInTheBox = false;
         for(int i = 0; i < fieldSize; ++i) {
-            for(int j = 0; j < fieldSize; ++j) {
-                fieldBackup[i][j] = field[i][j];
-            }
+            System.arraycopy(field[i], 0, fieldBackup[i], 0, fieldSize);
         }
         for(int ways = 0; ((ways < fieldSize) && (!manInTheBox) && (!gotIt)); ++ways) {
             int[][] nextCoords = new int[4][2];
@@ -152,27 +148,19 @@ public class GameField {
     }
 
     public boolean canIStepOnIt(int xcoord, int ycoord) {
-        if((field[ycoord][xcoord] == '.') || (field[ycoord][xcoord] == 'O') || (field[ycoord][xcoord] == 'X')
-                || (field[ycoord][xcoord] == 'o')) {
-            return true;
-        } else {
-            return false;
-        }
+        return (field[ycoord][xcoord] == '.') || (field[ycoord][xcoord] == 'O') || (field[ycoord][xcoord] == 'X')
+                || (field[ycoord][xcoord] == 'o');
     }
 
     public boolean canEnemyStepOnIt(int xcoord, int ycoord) {
-        if((field[ycoord][xcoord] == '.') || (field[ycoord][xcoord] == 'o')) {
-            return true;
-        } else {
-            return false;
-        }
+        return (field[ycoord][xcoord] == '.') || (field[ycoord][xcoord] == 'o');
     }
 
     private void randomizeEssences(char essence, int num) {
         ArrayList<Integer> dummy;
         Random rand = new Random();
-        Integer currRandXCoord;
-        Integer currRandYCoord;
+        int currRandXCoord;
+        int currRandYCoord;
         int enemiesIterator = 0;
         if(essence == '#') {
             obstaclesCoord.clear();
@@ -231,16 +219,6 @@ public class GameField {
         }
     }
 
-    public void gameFieldPrintBW() {
-        for(int i = 0; i < fieldSize; ++i) {
-            for(int j = 0; j < fieldSize; ++j) {
-                System.out.print(field[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.println();
-    }
-
     public char getCell(int x, int y) {
         return field[y][x];
     }
@@ -255,12 +233,5 @@ public class GameField {
 
     public Integer[][] getEnemiesCoord(){
         return enemiesCoord;
-    }
-
-    public void setEnemiesCoord(Integer[][] newEnemiesCoord){
-        for(int i = 0; i < newEnemiesCoord.length; ++i) {
-            enemiesCoord[i][0] = newEnemiesCoord[i][0];
-            enemiesCoord[i][1] = newEnemiesCoord[i][1];
-        }
     }
 }

@@ -95,8 +95,26 @@ public class StartGUI extends JFrame {
 
     class ButtonEventListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            new GameFrame(Integer.parseInt(input.getText()), Integer.parseInt(inputWalls.getText()),
-                    Integer.parseInt(inputEnemy.getText()), radio1.isSelected());
+            int size = -1, countWalls = -1, countEnemy = -1;
+            try {
+                size = Integer.parseInt(input.getText());
+                countWalls = Integer.parseInt(inputWalls.getText());
+                countEnemy = Integer.parseInt(inputEnemy.getText());
+            } catch (NumberFormatException exception) {
+                System.out.println(exception);
+            }
+            if (size < 0 || countWalls < 0 || countEnemy < 0) {
+                JOptionPane.showMessageDialog(null, "Invalid value!", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } else if (size < 6 || size > 50) {
+                JOptionPane.showMessageDialog(null, "Size should be between 6 and 50!", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } else if (countWalls + countEnemy + 2 > size * size) {
+                JOptionPane.showMessageDialog(null, "Too many walls or enemies!", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } else {
+                new GameFrame(size, countWalls, countEnemy, radio1.isSelected());
+            }
         }
     }
 }

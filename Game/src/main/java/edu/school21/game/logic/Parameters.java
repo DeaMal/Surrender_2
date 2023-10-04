@@ -1,7 +1,5 @@
 package edu.school21.game.logic;
 
-import edu.school21.game.app.Render;
-
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Properties;
@@ -28,7 +26,7 @@ public class Parameters {
         }
         Properties prop = new Properties();
         try {
-            prop.load(Objects.requireNonNull(Render.class.getResourceAsStream("/application-" + profile + ".properties")));
+            prop.load(Objects.requireNonNull(Parameters.class.getResourceAsStream("/application-" + profile + ".properties")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

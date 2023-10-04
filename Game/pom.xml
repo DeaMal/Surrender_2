@@ -15,19 +15,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.beust</groupId>
-            <artifactId>jcommander</artifactId>
-            <version>1.82</version>
-        </dependency>
-        <dependency>
             <groupId>edu.school21.chase.logic</groupId>
             <artifactId>ChaseLogic</artifactId>
             <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.diogonunes</groupId>
-            <artifactId>JCDP</artifactId>
-            <version>4.0.2</version>
         </dependency>
     </dependencies>
 
