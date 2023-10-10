@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public class StartGUI extends JFrame {
     private final JTextField input = new JTextField("20", 5);
@@ -13,7 +14,14 @@ public class StartGUI extends JFrame {
 
     public StartGUI() {
         super("Surrender, You're Surrounded");
-        setBounds(600, 350, 700, 378);
+        if (System.getProperty("os.name").startsWith("Mac")) {
+            setSize(720, 367);
+//            setBounds(600, 300, 720, 367);
+        } else {
+            setSize(700, 378);
+//            setBounds(600, 300, 700, 378);
+        }
+        setLocation(600, 300);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -28,7 +36,7 @@ public class StartGUI extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridheight = 6;
-        container.add(new JLabel(new ImageIcon(getClass().getResource("/Picture.jpg"))), constraints);
+        container.add(new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getResource("/Picture.jpg")))), constraints);
 
         constraints.gridheight = 1;
         constraints.gridy = 0;
@@ -101,7 +109,7 @@ public class StartGUI extends JFrame {
                 countWalls = Integer.parseInt(inputWalls.getText());
                 countEnemy = Integer.parseInt(inputEnemy.getText());
             } catch (NumberFormatException exception) {
-                System.out.println(exception);
+                exception.printStackTrace();
             }
             if (size < 0 || countWalls < 0 || countEnemy < 0) {
                 JOptionPane.showMessageDialog(null, "Invalid value!", "Error",
