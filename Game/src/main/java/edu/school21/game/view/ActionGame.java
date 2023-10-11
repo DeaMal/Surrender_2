@@ -23,11 +23,13 @@ public class ActionGame extends JComponent implements KeyListener, ActionListene
     private final int size;
     private final JFrame game;
     private final BufferedImage field2D;
-    private final BufferedImage enemy2D;
+    private BufferedImage enemy2D;
+    private BufferedImage enemy2D_2;
     private final BufferedImage player2D;
     private final BufferedImage wall2D;
     private final BufferedImage goal2D;
     Timer t = new Timer(5, this);
+    int change = 0;
 
     public ActionGame(int fieldSize, int wallsCount, int enemyCount, boolean mode, JFrame g) {
         game = g;
@@ -40,7 +42,8 @@ public class ActionGame extends JComponent implements KeyListener, ActionListene
             enemies[i] = new Enemy(field.getEnemiesCoord()[i][0], field.getEnemiesCoord()[i][1], field, player);
         }
         player2D = drawElement(getColor(parameters.getPlayerColor()), parameters.getPlayer(), "/1.png");
-        enemy2D = drawElement(getColor(parameters.getEnemyColor()), parameters.getEnemy(), "/2.png");
+        enemy2D = drawElement(getColor(parameters.getEnemyColor()), parameters.getEnemy(), "/2_1.png");
+        enemy2D_2 = drawElement(getColor(parameters.getEnemyColor()), parameters.getEnemy(), "/2_2.png");
         wall2D = drawElement(getColor(parameters.getWallColor()), parameters.getWall(), "/3.png");
         goal2D = drawElement(getColor(parameters.getGoalColor()), parameters.getGoal(), "/4.png");
         field2D = drawField();
@@ -93,12 +96,17 @@ public class ActionGame extends JComponent implements KeyListener, ActionListene
     public void paint(Graphics g) {
         Graphics2D graphics2D = (Graphics2D)g;
         graphics2D.drawImage(field2D, null, 0, 0);
-
         for (Enemy e : enemies) {
             graphics2D.drawImage(enemy2D, null, (e.getMyPointCoordX() - 1) * 20, (e.getMyPointCoordY() - 1) * 20);
         }
         graphics2D.drawImage(player2D, null, (player.getCordX() - 1) * 20, (player.getCordY() - 1) * 20);
         graphics2D.dispose();
+        change = (change + 1) % 80;
+        if (change == 0) {
+        BufferedImage temp = enemy2D;
+        enemy2D = enemy2D_2;
+        enemy2D_2 = temp;
+        }
         t.start();
     }
 
