@@ -52,8 +52,14 @@ public class ActionGame extends JComponent implements KeyListener, ActionListene
     public BufferedImage drawField() {
         BufferedImage targetImage = new BufferedImage(size * 20, size * 20, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2D = targetImage.createGraphics();
-        g2D.setColor(getColor(parameters.getEmptyColor()));
-        g2D.fillRect(0, 0, size * 20, size * 20);
+//        g2D.setColor(getColor(parameters.getEmptyColor()));
+//        g2D.fillRect(0, 0, size * 20, size * 20);
+        BufferedImage empty = drawElement(getColor(parameters.getEmptyColor()), parameters.getEmpty(), "/5.png");
+        for (int i = 1; i < size + 1; i++) {
+            for (int j = 1; j < size + 1; j++) {
+                g2D.drawImage(empty, null, (j - 1) * 20, (i - 1) * 20);
+            }
+        }
         for (int i = 1; i < size + 1; i++) {
             for (int j = 1; j < size + 1; j++) {
                 char ch = field.getCell(j, i);
